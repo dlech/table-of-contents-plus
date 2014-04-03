@@ -1478,9 +1478,7 @@ wp_reset_postdata();
 						}
 					}
 
-					// check minimum number of headings
-					if ( count($matches) >= $this->options['start'] ) {
-
+					if ( count($matches) ) {
 						for ($i = 0; $i < count($matches); $i++) {
 							// get anchor and add to find and replace arrays
 							$anchor = $this->url_anchor_target( $matches[$i][0] );
@@ -1491,12 +1489,12 @@ wp_reset_postdata();
 									'</h' . $matches[$i][2] . '>'	// end of heading
 								),
 								array(
-									$matches[$i][1] . '<span id="' . $anchor . '">',
+									$matches[$i][1] . '<a href="#' . $anchor . '" class="anchor-link">&#182;</a>' .
+									'<a name="' . $anchor . '"></a><span id="' . $anchor . '">',
 									'</span></h' . $matches[$i][2] . '>'
 								),
 								$matches[$i][0]
 							);
-
 							// assemble flat list
 							if ( !$this->options['show_heirarchy'] ) {
 								$items .= '<li><a href="#' . $anchor . '">';
@@ -1504,6 +1502,10 @@ wp_reset_postdata();
 								$items .= strip_tags($matches[$i][0]) . '</a></li>';
 							}
 						}
+					}
+
+					// check minimum number of headings
+					if ( count($matches) >= $this->options['start'] ) {
 
 						// build a hierarchical toc?
 						// we could have tested for $items but that var can be quite large in some cases
@@ -1567,11 +1569,11 @@ wp_reset_postdata();
 				
 				$items = $this->extract_headings($find, $replace, $content);
 
-				if ( $items ) {
+				if ( true ) {
 					// do we display the toc within the content or has the user opted
 					// to only show it in the widget?  if so, then we still need to 
 					// make the find/replace call to insert the anchors
-					if ( $this->options['show_toc_in_widget_only'] && (in_array(get_post_type(), $this->options['show_toc_in_widget_only_post_types'])) ) {
+					if ( !$items || ( $this->options['show_toc_in_widget_only'] && (in_array(get_post_type(), $this->options['show_toc_in_widget_only_post_types'])) ) ) {
 						$content = $this->mb_find_replace($find, $replace, $content);
 					}
 					else {
